@@ -17,10 +17,12 @@ class FriendshipViewSet(viewsets.GenericViewSet):
     # 如果是 Friendship.objects.all 的话就会出现 404 Not Found
     # 因为 detail=True 的 actions 会默认先去调用 get_object() 也就是
     # queryset.filter(pk=1) 查询一下这个 object 在不在
+    serializer_class = FriendshipSerializerForCreate
     queryset = User.objects.all()
 
     @action(methods=['GET'], detail=True, permission_classes=[AllowAny])
     def followers(self, request, pk):
+        # GET /api/friendships/1/followers
         friendships = Friendship.objects.filter(to_user_id=pk).order_by('-created_at')
         serializer = FollowerSerializer(friendships, many=True)
         return Response(
